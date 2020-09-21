@@ -1,0 +1,13 @@
+#!/usr/bin/env php
+<?php
+
+$docker_mask_ip = null;
+foreach (file('/etc/hosts') as $line) {
+    if (preg_match('/(172\.\d+\.\d+)\.\d+\s/', $line, $s)) {
+        $docker_mask_ip = $s[1];
+    }
+}
+
+$writer = fopen('/etc/hosts', 'a');
+fwrite($writer, "${docker_mask_ip}.1 docker-host\n");
+

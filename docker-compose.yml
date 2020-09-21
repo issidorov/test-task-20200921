@@ -1,0 +1,13 @@
+version: '3'
+services:
+  lamp:
+    build:
+        context: .
+    volumes:
+      - ./:/app:delegated
+    ports:
+      - '80:80'
+      - '3306:3306'
+    stdin_open: true
+    tty: true
+
