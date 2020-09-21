@@ -6,7 +6,6 @@ namespace app\tests\unit\models\MultiFieldTrait;
 
 use app\models\MultiFieldTrait;
 use yii\db\ActiveRecord;
-use yii\helpers\ArrayHelper;
 
 /**
  * Class MyFake
@@ -23,19 +22,14 @@ class MyFake extends ActiveRecord
     public static function findOne($condition)
     {
         $model = parent::findOne($condition);
-        $ids = [$model->id];
-        $model->myFieldData = self::multiFieldGetData('my_fake_value', $ids)[$model->id];
+        self::multiField_loadFromDatabase([$model], 'myFieldData', 'my_fake_value');
         return $model;
     }
 
     public static function findAll($condition)
     {
         $models = parent::findAll($condition);
-        $ids = ArrayHelper::getColumn($models, 'id');
-        $data = self::multiFieldGetData('my_fake_value', $ids);
-        foreach ($models as $model) {
-            $model->myFieldData = $data[$model->id] ?? [];
-        }
+        self::multiField_loadFromDatabase($models, 'myFieldData', 'my_fake_value');
         return $models;
     }
 
