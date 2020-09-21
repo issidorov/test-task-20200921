@@ -5,30 +5,26 @@ namespace app\models;
 
 
 use yii\db\Query;
-use yii\helpers\ArrayHelper;
 
 trait MultiFieldTrait
 {
     private array $_multiField_oldValues = [];
 
-    private static function multiField_loadFromDatabase(array $models, string $modelField, string $relationTable)
+    private function multiField_loadFromDatabase(string $modelField, string $relationTable)
     {
-        $relationIds = array_filter(ArrayHelper::getColumn($models, 'id'));
         $rows = (new Query())
             ->select(['relation_id', 'key', 'value'])
             ->from($relationTable)
-            ->where(['relation_id' => $relationIds])
+            ->where(['relation_id' => $this->id])
             ->all();
 
-        $allValues = [];
+        $data = [];
         foreach ($rows as $row) {
-            $allValues[$row['relation_id']][$row['key']][] = $row['value'];
+            $data[$row['key']][] = $row['value'];
         }
 
-        foreach ($models as $model) {
-            $model->$modelField = $allValues[$model->id] ?? [];
-            $model->_multiField_oldValues[$modelField] = $model->$modelField;
-        }
+        $this->$modelField = $data;
+        $this->_multiField_oldValues[$modelField] = $data;
     }
 
     private function multiField_saveToDatabase(string $modelField, string $relationTable)

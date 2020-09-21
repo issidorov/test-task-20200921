@@ -19,18 +19,10 @@ class MyFake extends ActiveRecord
 
     public array $myFieldData = [];
 
-    public static function findOne($condition)
+    public function afterFind()
     {
-        $model = parent::findOne($condition);
-        self::multiField_loadFromDatabase([$model], 'myFieldData', 'my_fake_value');
-        return $model;
-    }
-
-    public static function findAll($condition)
-    {
-        $models = parent::findAll($condition);
-        self::multiField_loadFromDatabase($models, 'myFieldData', 'my_fake_value');
-        return $models;
+        parent::afterFind();
+        $this->multiField_loadFromDatabase('myFieldData', 'my_fake_value');
     }
 
     public function afterSave($insert, $changedAttributes)
