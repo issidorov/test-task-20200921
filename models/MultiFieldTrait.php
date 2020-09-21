@@ -9,8 +9,6 @@ use yii\helpers\ArrayHelper;
 
 trait MultiFieldTrait
 {
-    private array $multiFieldCache = [];
-
     private static function multiField_loadFromDatabase(array $models, string $modelField, string $relationTable)
     {
         $relationIds = array_filter(ArrayHelper::getColumn($models, 'id'));
@@ -30,7 +28,7 @@ trait MultiFieldTrait
         }
     }
 
-    private function multiFieldUpdate($table, $relationId, $data)
+    private function multiField_saveToDatabase($table, $relationId, $data)
     {
         \Yii::$app->db->createCommand()
             ->delete($table, ['relation_id' => $relationId])

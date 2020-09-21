@@ -35,6 +35,6 @@ class MyFake extends ActiveRecord
 
     public function saveMyFieldData()
     {
-        $this->multiFieldUpdate('my_fake_value', $this->id, $this->myFieldData);
+        $this->multiField_saveToDatabase('my_fake_value', $this->id, $this->myFieldData);
     }
 }
