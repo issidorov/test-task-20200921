@@ -72,13 +72,11 @@ class MultiFieldTraitTest extends \Codeception\Test\Unit
     {
         $model = new MyFake();
         $model->id = 1;
-        $model->save();
-
         $model->myFieldData = [
             'key1' => ['value 1', 'value 2'],
             'key2' => ['value 3'],
         ];
-        $model->saveMyFieldData();
+        $model->save();
 
         $excepted = [
             ['relation_id' => 1, 'key' => 'key1', 'value' => 'value 1'],
@@ -96,11 +94,9 @@ class MultiFieldTraitTest extends \Codeception\Test\Unit
     {
         $model = new MyFake();
         $model->id = 1;
-        $model->save();
-
         $model->myFieldData['key1'] = ['value 1', 'value 2'];
         $model->myFieldData['key2'] = ['value 3'];
-        $model->saveMyFieldData();
+        $model->save();
 
         $excepted = [
             ['relation_id' => 1, 'key' => 'key1', 'value' => 'value 1'],
@@ -128,7 +124,7 @@ class MultiFieldTraitTest extends \Codeception\Test\Unit
 
         $model = MyFake::findOne(['id' => 1]);
         $model->myFieldData = [];
-        $model->saveMyFieldData();
+        $model->save();
 
         $excepted = [];
         $actual = (new Query())

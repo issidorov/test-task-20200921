@@ -33,8 +33,13 @@ class MyFake extends ActiveRecord
         return $models;
     }
 
-    public function saveMyFieldData()
+    public function save($runValidation = true, $attributeNames = null)
     {
-        $this->multiField_saveToDatabase('my_fake_value', $this->id, $this->myFieldData);
+        if (parent::save($runValidation, $attributeNames)) {
+            $this->multiField_saveToDatabase('myFieldData', 'my_fake_value');
+            return true;
+        } else {
+            return false;
+        }
     }
 }

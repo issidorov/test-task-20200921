@@ -9,6 +9,8 @@ use yii\helpers\ArrayHelper;
 
 trait MultiFieldTrait
 {
+    private array $_multiField_oldValues = [];
+
     private static function multiField_loadFromDatabase(array $models, string $modelField, string $relationTable)
     {
         $relationIds = array_filter(ArrayHelper::getColumn($models, 'id'));
@@ -25,23 +27,28 @@ trait MultiFieldTrait
 
         foreach ($models as $model) {
             $model->$modelField = $allValues[$model->id] ?? [];
+            $model->_multiField_oldValues[$modelField] = $model->$modelField;
         }
     }
 
-    private function multiField_saveToDatabase($table, $relationId, $data)
+    private function multiField_saveToDatabase(string $modelField, string $relationTable)
     {
-        \Yii::$app->db->createCommand()
-            ->delete($table, ['relation_id' => $relationId])
-            ->execute();
+        $oldValue = $this->_multiField_oldValues[$modelField] ?? [];
+        if ($this->$modelField != $oldValue) {
+            \Yii::$app->db->createCommand()
+                ->delete($relationTable, ['relation_id' => $this->id])
+                ->execute();
 
-        $batchData = [];
-        foreach ($data as $key => $values) {
-            foreach ($values as $value) {
-                $batchData[] = [$relationId, $key, $value];
+            $batchData = [];
+            foreach ($this->$modelField as $key => $values) {
+                foreach ($values as $value) {
+                    $batchData[] = [$this->id, $key, $value];
+                }
             }
+            \Yii::$app->db->createCommand()
+                ->batchInsert($relationTable, ['relation_id', 'key', 'value'], $batchData)
+                ->execute();
+            $this->_multiField_oldValues[$modelField] = $this->$modelField;
         }
-        \Yii::$app->db->createCommand()
-            ->batchInsert($table, ['relation_id', 'key', 'value'], $batchData)
-            ->execute();
     }
 }
