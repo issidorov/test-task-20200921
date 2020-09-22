@@ -19,19 +19,19 @@ class CustomPropsBehavior extends Behavior
     {
         return [
             ActiveRecord::EVENT_AFTER_FIND =>
-                fn(Event $event) => $this->afterFind($event->sender),
+                fn(Event $event) => $this->onAfterFind($event->sender),
             ActiveRecord::EVENT_AFTER_REFRESH =>
-                fn(Event $event) => $this->afterFind($event->sender),
+                fn(Event $event) => $this->onAfterFind($event->sender),
             ActiveRecord::EVENT_AFTER_INSERT =>
-                fn(Event $event) => $this->afterSave($event->sender),
+                fn(Event $event) => $this->onAfterInsert($event->sender),
             ActiveRecord::EVENT_AFTER_UPDATE =>
-                fn(Event $event) => $this->afterSave($event->sender),
+                fn(Event $event) => $this->onAfterUpdate($event->sender),
             ActiveRecord::EVENT_AFTER_DELETE =>
-                fn(Event $event) => $this->afterDelete($event->sender),
+                fn(Event $event) => $this->onAfterDelete($event->sender),
         ];
     }
 
-    private function afterFind(ActiveRecord $model)
+    private function onAfterFind(ActiveRecord $model)
     {
         $table = $this->getRelationTable($model);
 
@@ -50,7 +50,13 @@ class CustomPropsBehavior extends Behavior
         $this->old_custom_props = $data;
     }
 
-    private function afterSave(ActiveRecord $model)
+    private function onAfterInsert(ActiveRecord $model)
+    {
+        $this->doInsertProps($model);
+        $this->old_custom_props = $this->custom_props;
+    }
+
+    private function onAfterUpdate(ActiveRecord $model)
     {
         if ($this->custom_props != $this->old_custom_props) {
             $this->doClean($model);
@@ -59,7 +65,7 @@ class CustomPropsBehavior extends Behavior
         }
     }
 
-    private function afterDelete(ActiveRecord $model)
+    private function onAfterDelete(ActiveRecord $model)
     {
         $this->doClean($model);
     }
