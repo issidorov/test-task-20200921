@@ -9,7 +9,6 @@ use yii\db\ActiveRecord;
 
 /**
  * Class MyFake
- * @package tests\unit\models\CustomPropsTrait
  * @property $id
  * @property array $myFieldData
  */

@@ -9,7 +9,6 @@ use yii\db\ActiveRecord;
 
 /**
  * Class MyFake
- * @package tests\unit\models\MultiFieldTrait
  * @property $id
  * @property array $custom_props
  */
