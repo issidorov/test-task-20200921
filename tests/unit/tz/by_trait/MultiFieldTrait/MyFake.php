@@ -1,10 +1,10 @@
 <?php
 
 
-namespace app\tests\unit\models\MultiFieldTrait;
+namespace app\tests\unit\tz\by_trait\MultiFieldTrait;
 
 
-use app\models\MultiFieldTrait;
+use app\tz\by_trait\MultiFieldTrait;
 use yii\db\ActiveRecord;
 
 /**

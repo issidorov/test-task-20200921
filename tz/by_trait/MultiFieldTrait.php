@@ -1,7 +1,7 @@
 <?php
 
 
-namespace app\models;
+namespace app\tz\by_trait;
 
 
 use yii\db\Query;
