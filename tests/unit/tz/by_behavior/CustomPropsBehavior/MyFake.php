@@ -28,7 +28,7 @@ class MyFake extends ActiveRecord
     public static function findByCustomProps($propConditions)
     {
         $query = static::find();
-        CustomPropsBehavior::applyPropConditions($query, $propConditions);
+        CustomPropsBehavior::applyPropConditions(static::class, $query, $propConditions);
         return $query;
     }
 }

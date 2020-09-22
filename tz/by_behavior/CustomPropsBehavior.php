@@ -23,19 +23,21 @@ class CustomPropsBehavior extends Behavior
      *     'key2' => ['value 4'],
      * ];
      * ```
+     * @param string|ActiveRecord $modelClassName
      * @param ActiveQuery $query
      * @param array $propConditions
-     *
      */
-    public static function applyPropConditions(ActiveQuery $query, array $propConditions)
+    public static function applyPropConditions(string $modelClassName, ActiveQuery $query, array $propConditions)
     {
+        $modelTable = $modelClassName::tableName();
+        $propTable = self::getPropTable($modelClassName);
         $i = 0;
         foreach ($propConditions as $key => $values) {
             $i++;
-            $joinAlias = 'prop' . $i;
+            $joinAlias = "prop{$i}";
             $query->innerJoin(
-                "my_fake_props $joinAlias",
-                "my_fake.id = $joinAlias.relation_id AND $joinAlias.key=:prop_key{$i}",
+                "$propTable $joinAlias",
+                "$modelTable.id = $joinAlias.relation_id AND $joinAlias.key=:prop_key{$i}",
                 [":prop_key{$i}" => $key]
             );
             $query->andWhere(["$joinAlias.value" => $values]);
@@ -61,7 +63,7 @@ class CustomPropsBehavior extends Behavior
 
     private function onAfterFind(ActiveRecord $model)
     {
-        $table = $this->getRelationTable($model);
+        $table = $this->getPropTable(get_class($model));
 
         $rows = (new Query())
             ->select(['relation_id', 'key', 'value'])
@@ -100,7 +102,7 @@ class CustomPropsBehavior extends Behavior
 
     private function doClean(ActiveRecord $model)
     {
-        $table = $this->getRelationTable($model);
+        $table = $this->getPropTable(get_class($model));
         \Yii::$app->db->createCommand()
             ->delete($table, ['relation_id' => $model->primaryKey])
             ->execute();
@@ -108,7 +110,7 @@ class CustomPropsBehavior extends Behavior
 
     private function doInsertProps(ActiveRecord $model)
     {
-        $table = $this->getRelationTable($model);
+        $table = $this->getPropTable(get_class($model));
         $batchData = [];
         foreach ($this->custom_props as $key => $values) {
             foreach ($values as $value) {
@@ -120,10 +122,13 @@ class CustomPropsBehavior extends Behavior
             ->execute();
     }
 
-    private function getRelationTable(ActiveRecord $model)
+    /**
+     * @param string|ActiveRecord $modelClassName
+     * @return string
+     */
+    private static function getPropTable(string $modelClassName)
     {
-        /** @var ActiveRecord $modelClass */
-        $modelClass = get_class($model);
-        return preg_replace('/(\w+)/', '$1_props', $modelClass::tableName());
+        $modelTable = $modelClassName::tableName();
+        return preg_replace('/(\w+)/', '$1_props', $modelTable);
     }
 }
