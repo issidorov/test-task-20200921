@@ -5,9 +5,12 @@ services:
         context: .
     volumes:
       - ./:/app:delegated
+      - db_data:/var/lib/mysql
     ports:
       - '80:80'
       - '3306:3306'
     stdin_open: true
     tty: true
 
+volumes:
+  db_data: {}
