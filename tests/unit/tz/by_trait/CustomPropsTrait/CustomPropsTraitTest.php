@@ -53,7 +53,7 @@ class CustomPropsTraitTest extends \Codeception\Test\Unit
             'key1' => ['value 1', 'value 2'],
             'key2' => ['value 3'],
         ];
-        $actual = $model->myFieldData;
+        $actual = $model->custom_props;
         $this->assertEquals($excepted, $actual);
     }
 
@@ -61,7 +61,7 @@ class CustomPropsTraitTest extends \Codeception\Test\Unit
     {
         $model = new MyFake();
         $model->id = 1;
-        $model->myFieldData = [
+        $model->custom_props = [
             'key1' => ['value 1', 'value 2'],
             'key2' => ['value 3'],
         ];

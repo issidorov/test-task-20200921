@@ -10,23 +10,15 @@ use yii\db\ActiveRecord;
 /**
  * Class MyFake
  * @property $id
- * @property array $myFieldData
+ * @property array $custom_props
  */
 class MyFake extends ActiveRecord
 {
     use CustomPropsTrait;
 
-    public array $myFieldData = [];
-
-    public function afterFind()
+    public function init()
     {
-        parent::afterFind();
-        $this->multiField_loadFromDatabase('myFieldData', 'my_fake_props');
-    }
-
-    public function afterSave($insert, $changedAttributes)
-    {
-        parent::afterSave($insert, $changedAttributes);
-        $this->multiField_saveToDatabase('myFieldData', 'my_fake_props');
+        parent::init();
+        $this->customProps_init();
     }
 }
