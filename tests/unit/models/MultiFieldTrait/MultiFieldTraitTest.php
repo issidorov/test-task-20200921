@@ -24,6 +24,17 @@ class MultiFieldTraitTest extends \Codeception\Test\Unit
             ->execute();
     }
 
+    public function tearDown(): void
+    {
+        \Yii::$app->db->createCommand()
+            ->dropTable('my_fake')
+            ->execute();
+        \Yii::$app->db->createCommand()
+            ->dropTable('my_fake_value')
+            ->execute();
+        parent::tearDown();
+    }
+
     public function testGetDataWithOneModel()
     {
         \Yii::$app->db->createCommand()
@@ -132,16 +143,5 @@ class MultiFieldTraitTest extends \Codeception\Test\Unit
             ->from('my_fake_value')
             ->all();
         $this->assertEquals($excepted, $actual);
-    }
-
-    public function tearDown(): void
-    {
-        \Yii::$app->db->createCommand()
-            ->dropTable('my_fake')
-            ->execute();
-        \Yii::$app->db->createCommand()
-            ->dropTable('my_fake_value')
-            ->execute();
-        parent::tearDown();
     }
 }
