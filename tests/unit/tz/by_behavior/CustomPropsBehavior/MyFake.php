@@ -20,4 +20,15 @@ class MyFake extends ActiveRecord
             CustomPropsBehavior::class
         ];
     }
+
+    /**
+     * @param $propConditions - see {@see CustomPropsBehavior::applyPropConditions}
+     * @return \yii\db\ActiveQuery
+     */
+    public static function findByCustomProps($propConditions)
+    {
+        $query = static::find();
+        CustomPropsBehavior::applyPropConditions($query, $propConditions);
+        return $query;
+    }
 }

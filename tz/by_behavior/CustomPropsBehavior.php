@@ -6,6 +6,7 @@ namespace app\tz\by_behavior;
 
 use yii\base\Behavior;
 use yii\base\Event;
+use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 use yii\db\Query;
 
@@ -13,6 +14,33 @@ class CustomPropsBehavior extends Behavior
 {
     public array $custom_props = [];
     public array $old_custom_props = [];
+
+    /**
+     * Example $propCondition:
+     * ```
+     * $propCondition = [
+     *     'key1' => ['value 1', 'value 2'],
+     *     'key2' => ['value 4'],
+     * ];
+     * ```
+     * @param ActiveQuery $query
+     * @param array $propConditions
+     *
+     */
+    public static function applyPropConditions(ActiveQuery $query, array $propConditions)
+    {
+        $i = 0;
+        foreach ($propConditions as $key => $values) {
+            $i++;
+            $joinAlias = 'prop' . $i;
+            $query->innerJoin(
+                "my_fake_props $joinAlias",
+                "my_fake.id = $joinAlias.relation_id AND $joinAlias.key=:prop_key{$i}",
+                [":prop_key{$i}" => $key]
+            );
+            $query->andWhere(["$joinAlias.value" => $values]);
+        }
+    }
 
     /** @noinspection PhpParamsInspection */
     public function events()
