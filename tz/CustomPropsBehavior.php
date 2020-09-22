@@ -1,7 +1,7 @@
 <?php
 
 
-namespace app\tz\by_behavior;
+namespace app\tz;
 
 
 use yii\base\Behavior;

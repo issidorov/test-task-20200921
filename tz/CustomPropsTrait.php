@@ -1,7 +1,7 @@
 <?php
 
 
-namespace app\tz\by_trait;
+namespace app\tz;
 
 
 use yii\base\Event;

@@ -1,10 +1,10 @@
 <?php
 
 
-namespace app\tests\unit\tz\by_trait\CustomPropsTrait;
+namespace app\tests\unit\tz\_model_by_trait;
 
 
-use app\tz\by_trait\CustomPropsTrait;
+use app\tz\CustomPropsTrait;
 use yii\db\ActiveRecord;
 
 /**

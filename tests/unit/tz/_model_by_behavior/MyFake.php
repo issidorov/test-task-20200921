@@ -1,10 +1,10 @@
 <?php
 
 
-namespace app\tests\unit\tz\by_behavior\CustomPropsBehavior;
+namespace app\tests\unit\tz\_model_by_behavior;
 
 
-use app\tz\by_behavior\CustomPropsBehavior;
+use app\tz\CustomPropsBehavior;
 use yii\db\ActiveRecord;
 
 /**

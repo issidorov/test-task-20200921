@@ -1,17 +1,28 @@
 <?php
 
-namespace app\tests\unit\tz\by_behavior\CustomPropsBehavior;
+
+namespace app\tests\unit\tz;
 
 
 use yii\db\Query;
 use yii\db\Schema;
 use yii\helpers\ArrayHelper;
+use app\tests\unit\tz\_model_by_behavior\MyFake as MyFakeByBehavior;
+use app\tests\unit\tz\_model_by_trait\MyFake as MyFakeByTrait;
 
-class CustomPropsBehaviorTest extends \Codeception\Test\Unit
+abstract class BaseTestUnit extends \Codeception\Test\Unit
 {
+    /**
+     * @var MyFakeByBehavior|MyFakeByTrait|string
+     */
+    private string $fakeClassName;
+
+    abstract protected function getFakeClassName(): string;
+
     public function setUp(): void
     {
         parent::setUp();
+        $this->fakeClassName = $this->getFakeClassName();
         \Yii::$app->db->createCommand()
             ->createTable('my_fake', ['id' => Schema::TYPE_PK])
             ->execute();
@@ -47,7 +58,7 @@ class CustomPropsBehaviorTest extends \Codeception\Test\Unit
                 [1, 'key2', 'value 3'],
             ])->execute();
 
-        $model = MyFake::findOne(['id' => 1]);
+        $model = $this->fakeClassName::findOne(['id' => 1]);
 
         $excepted = [
             'key1' => ['value 1', 'value 2'],
@@ -59,7 +70,7 @@ class CustomPropsBehaviorTest extends \Codeception\Test\Unit
 
     public function testSave()
     {
-        $model = new MyFake();
+        $model = new $this->fakeClassName();
         $model->id = 1;
         $model->custom_props = [
             'key1' => ['value 1', 'value 2'],
@@ -91,7 +102,7 @@ class CustomPropsBehaviorTest extends \Codeception\Test\Unit
                 [1, 'key2', 'value 3'],
             ])->execute();
 
-        $model = MyFake::findOne(['id' => 1]);
+        $model = $this->fakeClassName::findOne(['id' => 1]);
         $model->delete();
 
         $excepted = [];
@@ -152,9 +163,10 @@ class CustomPropsBehaviorTest extends \Codeception\Test\Unit
         $conditions = $params['conditions'];
         $expectedIds = $params['expectedIds'];
 
-        $models = MyFake::findByCustomProps($conditions)->all();
+        $models = $this->fakeClassName::findByCustomProps($conditions)->all();
 
         $actualIds = ArrayHelper::getColumn($models, 'id');
         $this->assertEquals($expectedIds, $actualIds);
     }
+
 }
