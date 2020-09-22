@@ -35,7 +35,7 @@ class MultiFieldTraitTest extends \Codeception\Test\Unit
         parent::tearDown();
     }
 
-    public function testGetDataWithOneModel()
+    public function testOneRead()
     {
         \Yii::$app->db->createCommand()
             ->insert('my_fake', ['id' => 1])
@@ -57,7 +57,7 @@ class MultiFieldTraitTest extends \Codeception\Test\Unit
         $this->assertEquals($excepted, $actual);
     }
 
-    public function testGetDataWithManyModels()
+    public function testManyRead()
     {
         \Yii::$app->db->createCommand()
             ->insert('my_fake', ['id' => 1])
