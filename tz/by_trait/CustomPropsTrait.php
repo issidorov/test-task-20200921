@@ -5,6 +5,7 @@ namespace app\tz\by_trait;
 
 
 use yii\base\Event;
+use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 use yii\db\Query;
 
@@ -12,6 +13,36 @@ trait CustomPropsTrait
 {
     public array $custom_props = [];
     public array $old_custom_props = [];
+
+    /**
+     * Example $propCondition:
+     * ```
+     * $propCondition = [
+     *     'key1' => ['value 1', 'value 2'],
+     *     'key2' => ['value 4'],
+     * ];
+     * ```
+     * @param array $propConditions
+     * @return ActiveQuery
+     */
+    public static function findByCustomProps(array $propConditions)
+    {
+        $query = static::find();
+        $modelTable = static::tableName();
+        $propTable = self::customProps_getPropTable();
+        $i = 0;
+        foreach ($propConditions as $key => $values) {
+            $i++;
+            $joinAlias = "prop{$i}";
+            $query->innerJoin(
+                "$propTable $joinAlias",
+                "$modelTable.id = $joinAlias.relation_id AND $joinAlias.key=:prop_key{$i}",
+                [":prop_key{$i}" => $key]
+            );
+            $query->andWhere(["$joinAlias.value" => $values]);
+        }
+        return $query;
+    }
 
     public function customProps_init()
     {
@@ -24,7 +55,7 @@ trait CustomPropsTrait
 
     private function customProps_onAfterFind()
     {
-        $table = $this->customProps_getRelationTable();
+        $table = $this->customProps_getPropTable();
 
         $rows = (new Query())
             ->select(['relation_id', 'key', 'value'])
@@ -63,7 +94,7 @@ trait CustomPropsTrait
 
     private function customProps_doClean()
     {
-        $table = $this->customProps_getRelationTable();
+        $table = $this->customProps_getPropTable();
         \Yii::$app->db->createCommand()
             ->delete($table, ['relation_id' => $this->primaryKey])
             ->execute();
@@ -71,7 +102,7 @@ trait CustomPropsTrait
 
     private function customProps_doInsertProps()
     {
-        $table = $this->customProps_getRelationTable();
+        $table = $this->customProps_getPropTable();
         $batchData = [];
         foreach ($this->custom_props as $key => $values) {
             foreach ($values as $value) {
@@ -83,10 +114,10 @@ trait CustomPropsTrait
             ->execute();
     }
 
-    private function customProps_getRelationTable()
+    private static function customProps_getPropTable()
     {
-        $thisClass = get_class($this);
+        $modelClassName = static::class;
         /** @noinspection PhpUndefinedMethodInspection */
-        return preg_replace('/(\w+)/', '$1_props', $thisClass::tableName());
+        return preg_replace('/(\w+)/', '$1_props', $modelClassName::tableName());
     }
 }
