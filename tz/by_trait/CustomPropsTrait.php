@@ -6,7 +6,7 @@ namespace app\tz\by_trait;
 
 use yii\db\Query;
 
-trait MultiFieldTrait
+trait CustomPropsTrait
 {
     private array $_multiField_oldValues = [];
 

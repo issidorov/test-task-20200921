@@ -1,13 +1,13 @@
 <?php
 
 
-namespace app\tests\unit\tz\by_trait\MultiFieldTrait;
+namespace app\tests\unit\tz\by_trait\CustomPropsTrait;
 
 
 use yii\db\Query;
 use yii\db\Schema;
 
-class MultiFieldTraitTest extends \Codeception\Test\Unit
+class CustomPropsTraitTest extends \Codeception\Test\Unit
 {
     public function setUp(): void
     {
@@ -16,7 +16,7 @@ class MultiFieldTraitTest extends \Codeception\Test\Unit
             ->createTable('my_fake', ['id' => Schema::TYPE_PK])
             ->execute();
         \Yii::$app->db->createCommand()
-            ->createTable('my_fake_value', [
+            ->createTable('my_fake_props', [
                 'relation_id' => Schema::TYPE_INTEGER,
                 'key' => Schema::TYPE_STRING,
                 'value' => Schema::TYPE_STRING,
@@ -30,18 +30,18 @@ class MultiFieldTraitTest extends \Codeception\Test\Unit
             ->dropTable('my_fake')
             ->execute();
         \Yii::$app->db->createCommand()
-            ->dropTable('my_fake_value')
+            ->dropTable('my_fake_props')
             ->execute();
         parent::tearDown();
     }
 
-    public function testOneRead()
+    public function testRead()
     {
         \Yii::$app->db->createCommand()
             ->insert('my_fake', ['id' => 1])
             ->execute();
         \Yii::$app->db->createCommand()
-            ->batchInsert('my_fake_value', ['relation_id', 'key', 'value'], [
+            ->batchInsert('my_fake_props', ['relation_id', 'key', 'value'], [
                 [1, 'key1', 'value 1'],
                 [1, 'key1', 'value 2'],
                 [1, 'key2', 'value 3'],
@@ -57,29 +57,7 @@ class MultiFieldTraitTest extends \Codeception\Test\Unit
         $this->assertEquals($excepted, $actual);
     }
 
-    public function testManyRead()
-    {
-        \Yii::$app->db->createCommand()
-            ->insert('my_fake', ['id' => 1])
-            ->execute();
-        \Yii::$app->db->createCommand()
-            ->batchInsert('my_fake_value', ['relation_id', 'key', 'value'], [
-                [1, 'key1', 'value 1'],
-                [1, 'key1', 'value 2'],
-                [1, 'key2', 'value 3'],
-            ])->execute();
-
-        $models = MyFake::findAll(['id' => 1]);
-
-        $excepted = [
-            'key1' => ['value 1', 'value 2'],
-            'key2' => ['value 3'],
-        ];
-        $actual = $models[0]->myFieldData;
-        $this->assertEquals($excepted, $actual);
-    }
-
-    public function testCreate1()
+    public function testCreate()
     {
         $model = new MyFake();
         $model->id = 1;
@@ -96,27 +74,7 @@ class MultiFieldTraitTest extends \Codeception\Test\Unit
         ];
         $actual = (new Query())
             ->select(['relation_id', 'key', 'value'])
-            ->from('my_fake_value')
-            ->all();
-        $this->assertEquals($excepted, $actual);
-    }
-
-    public function testCreate2()
-    {
-        $model = new MyFake();
-        $model->id = 1;
-        $model->myFieldData['key1'] = ['value 1', 'value 2'];
-        $model->myFieldData['key2'] = ['value 3'];
-        $model->save();
-
-        $excepted = [
-            ['relation_id' => 1, 'key' => 'key1', 'value' => 'value 1'],
-            ['relation_id' => 1, 'key' => 'key1', 'value' => 'value 2'],
-            ['relation_id' => 1, 'key' => 'key2', 'value' => 'value 3'],
-        ];
-        $actual = (new Query())
-            ->select(['relation_id', 'key', 'value'])
-            ->from('my_fake_value')
+            ->from('my_fake_props')
             ->all();
         $this->assertEquals($excepted, $actual);
     }
@@ -127,20 +85,19 @@ class MultiFieldTraitTest extends \Codeception\Test\Unit
             ->insert('my_fake', ['id' => 1])
             ->execute();
         \Yii::$app->db->createCommand()
-            ->batchInsert('my_fake_value', ['relation_id', 'key', 'value'], [
+            ->batchInsert('my_fake_props', ['relation_id', 'key', 'value'], [
                 [1, 'key1', 'value 1'],
                 [1, 'key1', 'value 2'],
                 [1, 'key2', 'value 3'],
             ])->execute();
 
         $model = MyFake::findOne(['id' => 1]);
-        $model->myFieldData = [];
-        $model->save();
+        $model->delete();
 
         $excepted = [];
         $actual = (new Query())
             ->select(['relation_id', 'key', 'value'])
-            ->from('my_fake_value')
+            ->from('my_fake_props')
             ->all();
         $this->assertEquals($excepted, $actual);
     }
