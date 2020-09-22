@@ -136,9 +136,12 @@ class MultiFieldTraitTest extends \Codeception\Test\Unit
 
     public function tearDown(): void
     {
-        $c = \Yii::$app->db->createCommand();
-        $c->dropTable('my_fake')->execute();
-        $c->dropTable('my_fake_value')->execute();
+        \Yii::$app->db->createCommand()
+            ->dropTable('my_fake')
+            ->execute();
+        \Yii::$app->db->createCommand()
+            ->dropTable('my_fake_value')
+            ->execute();
         parent::tearDown();
     }
 }
