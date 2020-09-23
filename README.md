@@ -21,27 +21,24 @@
 
 ### Запуск в Docker и тестирование
 
-> Для запуска контейнера потребуются свободные порты 80 и 3306 на
-> вашем компьютере
-
 Скачиваем проект из GitHub
 
     ...
-
-Устанавливаем зависимости
-
-    docker-compose run --rm lamp composer install
 
 Запускаем контейнер
 
     docker-compose up -d
 
+Устанавливаем зависимости
+
+    docker-compose exec php /bin/bash
+    # composer install
+
 Теперь в браузере доступен базовый сайт
 
-    http://localhost/
+    http://localhost:8000/
 
 Запуск тестов
     
-    docker-compose exec lamp /bin/bash
-    > cd app
-    > vendor/bin/codecept run
+    docker-compose exec php /bin/bash
+    # vendor/bin/codecept run
