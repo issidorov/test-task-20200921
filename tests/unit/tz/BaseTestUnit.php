@@ -113,31 +113,6 @@ abstract class BaseTestUnit extends \Codeception\Test\Unit
         $this->assertEquals($excepted, $actual);
     }
 
-    public function dataSearch()
-    {
-        return [
-            'data_1' => [[
-                'conditions' => [
-                    'key1' => ['value 2']
-                ],
-                'expectedIds' => [1],
-            ]],
-            'data_2' => [[
-                'conditions' => [
-                    'key1' => ['value 1', 'value 2'],
-                    'key2' => ['value 4'],
-                ],
-                'expectedIds' => [2],
-            ]],
-            'data_3' => [[
-                'conditions' => [
-                    'key2' => ['value 3', 'value 4']
-                ],
-                'expectedIds' => [1, 2],
-            ]],
-        ];
-    }
-
     /**
      * @param $params
      * @dataProvider dataSearch
@@ -169,4 +144,28 @@ abstract class BaseTestUnit extends \Codeception\Test\Unit
         $this->assertEquals($expectedIds, $actualIds);
     }
 
+    public function dataSearch()
+    {
+        return [
+            'data_1' => [[
+                'conditions' => [
+                    'key1' => ['value 2']
+                ],
+                'expectedIds' => [1],
+            ]],
+            'data_2' => [[
+                'conditions' => [
+                    'key1' => ['value 1', 'value 2'],
+                    'key2' => ['value 4'],
+                ],
+                'expectedIds' => [2],
+            ]],
+            'data_3' => [[
+                'conditions' => [
+                    'key2' => ['value 3', 'value 4']
+                ],
+                'expectedIds' => [1, 2],
+            ]],
+        ];
+    }
 }
