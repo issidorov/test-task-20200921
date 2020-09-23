@@ -68,7 +68,7 @@ abstract class BaseTestUnit extends \Codeception\Test\Unit
         $this->assertEquals($excepted, $actual);
     }
 
-    public function testSave()
+    public function testInsert()
     {
         $model = new $this->fakeClassName();
         $model->id = 1;
@@ -82,6 +82,37 @@ abstract class BaseTestUnit extends \Codeception\Test\Unit
             ['relation_id' => 1, 'key' => 'key1', 'value' => 'value 1'],
             ['relation_id' => 1, 'key' => 'key1', 'value' => 'value 2'],
             ['relation_id' => 1, 'key' => 'key2', 'value' => 'value 3'],
+        ];
+        $actual = (new Query())
+            ->select(['relation_id', 'key', 'value'])
+            ->from('my_fake_props')
+            ->all();
+        $this->assertEquals($excepted, $actual);
+    }
+
+    public function testUpdate()
+    {
+        \Yii::$app->db->createCommand()
+            ->insert('my_fake', ['id' => 1])
+            ->execute();
+        \Yii::$app->db->createCommand()
+            ->batchInsert('my_fake_props', ['relation_id', 'key', 'value'], [
+                [1, 'key1', 'value 1'],
+                [1, 'key1', 'value 2'],
+                [1, 'key2', 'value 3'],
+            ])->execute();
+
+        $model = $this->fakeClassName::findOne(['id' => 1]);
+        $model->custom_props = [
+            'key7' => ['value 7'],
+            'key8' => ['value 8', 'value 9'],
+        ];
+        $model->save();
+
+        $excepted = [
+            ['relation_id' => 1, 'key' => 'key7', 'value' => 'value 7'],
+            ['relation_id' => 1, 'key' => 'key8', 'value' => 'value 8'],
+            ['relation_id' => 1, 'key' => 'key8', 'value' => 'value 9'],
         ];
         $actual = (new Query())
             ->select(['relation_id', 'key', 'value'])
